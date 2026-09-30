@@ -130,7 +130,7 @@ async def send_ahk_file(callback: types.CallbackQuery):
                 "📦 <b>ВАШ АХК-ПАК ГОТОВ К РАБОТЕ!</b> 📦\n\n"
                 "Разработчик: <b>Fenix_dinero</b>\n"
                 "Специально для: <b>Amazing RP</b>\n\n"
-                "📂 Распакуйте скачанный <code>.zip</code> архив и запускайте AHK перед заходом в игру. Удачи на сервере! 🔥"
+                "📂 Распакуйте скачанный <code>.zip</code> архив и запускайте AHK перед заходом in игру. Удачи на сервере! 🔥"
             ),
             parse_mode="HTML"
         )
@@ -231,19 +231,18 @@ async def process_ahk_file_update(message: types.Message, state: FSMContext):
         logging.error(f"File download error: {e}")
         await message.answer(f"❌ <b>Критическая ошибка при сохранении файла:</b> {e}", parse_mode="HTML")
 
-async def run_bot():
+async def start_polling_background(app):
     await bot.delete_webhook(drop_pending_updates=True)
-    await dp.start_polling(bot)
+    asyncio.create_task(dp.start_polling(bot))
+    logging.info("Long polling started successfully in background task!")
 
 def main():
-    loop = asyncio.get_event_loop()
-    loop.create_task(run_bot())
-    
     app = web.Application()
     app.router.add_get('/', lambda r: web.Response(text="Бот Fenix активен!"))
-    port = int(os.getenv("PORT", 8080))
-    web.run_app(app, host='0.0.0.0', port=port)
-
-if __name__ == "__main__":
-    main()
-
+    
+# Запускаем сборщик сообщений параллельно с веб-сервером сайта
+app.on_startup.append(start_polling_background)
+port = int(os.getenv("PORT", 8080))
+web.run_app(app, host='0.0.0.0', port=port)
+if name == "main":
+main()
