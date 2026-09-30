@@ -15,7 +15,7 @@ CHANNEL_ID = os.getenv("CHANNEL_ID")  # Числовой ID вашего кан�
 # Прямые внутренние ссылки Telegram (открываются сразу в приложении)
 CHANNEL_URL = "tg://resolve?domain=FenixAhk"
 VPN_BOT_URL = "tg://resolve?domain=fenixVPNrobot&start=click"
-STARS_BOT_URL = "https://t.me"  # Для ботов со звездами стандартные ссылки работают внутри приложения лучше всего
+STARS_BOT_URL = "tg://resolve?domain=fenix_Stars_bot&start=click"  # Для ботов со звездами стандартные ссылки работают внутри приложения лучше всего
 
 ZIP_FILE_NAME = "ahk.zip"
 BANNER_IMAGE_PATH = "banner.jpg"
