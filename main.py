@@ -238,17 +238,23 @@ async def on_startup(bot: Bot):
     if RENDER_URL:
         webhook_url = f"{RENDER_URL.rstrip('/')}/webhook"
         await bot.set_webhook(url=webhook_url, drop_pending_updates=True)
-logging.info(f"Webhook successfully set to: {webhook_url}")
-else:
-await bot.delete_webhook(drop_pending_updates=True)
-logging.warning("RENDER_URL env var is missing! Webhook not set.")
+        logging.info(f"Webhook successfully set to: {webhook_url}")
+    else:
+        await bot.delete_webhook(drop_pending_updates=True)
+        logging.warning("RENDER_URL env var is missing! Webhook not set.")
+
 def main():
-app = web.Application()
-app.router.add_get('/', lambda r: web.Response(text="Бот Fenix активен!"))
-SimpleRequestHandler(dispatcher=dp, bot=bot).register(app, path="/webhook")
-setup_application(app, dp, bot=bot)
-dp.startup.register(on_startup)
-port = int(os.getenv("PORT", 8080))
-web.run_app(app, host='0.0.0.0', port=port)
-if name == "main":
-main()
+    app = web.Application()
+    app.router.add_get('/', lambda r: web.Response(text="Бот Fenix активен!"))
+    
+    SimpleRequestHandler(dispatcher=dp, bot=bot).register(app, path="/webhook")
+    setup_application(app, dp, bot=bot)
+    
+    dp.startup.register(on_startup)
+    
+    port = int(os.getenv("PORT", 8080))
+    web.run_app(app, host='0.0.0.0', port=port)
+
+if __name__ == "__main__":
+    main()
+
