@@ -58,8 +58,8 @@ def get_subscription_keyboard():
 # Главное меню
 def get_main_keyboard():
     builder = InlineKeyboardBuilder()
-    builder.button(text="🌐 ПОДКЛЮЧИТЬ PHOENIX VPN 🌐", url=VPN_BOT_URL)
-    builder.button(text="⭐ ЗАПУСТИТЬ FENIX STARS ⭐", url=STARS_BOT_URL)
+    builder.button(text="🌐 ПОДКЛЮЧИТЬ PHOENIX VPN 🌐", url=FenixVpnRobot)
+    builder.button(text="⭐ ЗАПУСТИТЬ FENIX STARS ⭐", url=Fenix_stars_bot)
     builder.button(text="🎁 СКАЧАТЬ АХК ДЛЯ AMAZING RP 🎁", callback_data="get_ahk")
     builder.adjust(1)
     return builder.as_markup()
