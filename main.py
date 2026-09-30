@@ -9,6 +9,7 @@ from aiogram.enums import ChatMemberStatus
 from aiogram.types import FSInputFile
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
+from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHANNEL_ID = os.getenv("CHANNEL_ID")
@@ -30,19 +31,6 @@ dp = Dispatcher()
 class AdminStates(StatesGroup):
     waiting_for_broadcast_content = State()
     waiting_for_ahk_file = State()
-
-async def handle_ping(request):
-    return web.Response(text="Бот Fenix активен!")
-
-async def start_web_server():
-    app = web.Application()
-    app.router.add_get('/', handle_ping)
-    runner = web.AppRunner(app)
-    await runner.setup()
-    port = int(os.getenv("PORT", 8080))
-    site = web.TCPSite(runner, '0.0.0.0', port)
-    await site.start()
-    logging.info(f"Monitoring started on port {port}")
 
 async def is_subscribed(user_id: int) -> bool:
     try:
@@ -242,11 +230,19 @@ async def process_ahk_file_update(message: types.Message, state: FSMContext):
         await message.answer("✅ <b>Успешно!</b> Новый файл архива сохранен и готов к выдаче пользователям.", parse_mode="HTML")
     except Exception as e:
         logging.error(f"File download error: {e}")
+        await message.answer(f"❌ <b>Критическая ошибка при сохранении файла:</b> {e}", parse_mode="HTML")
 
-await message.answer(f"❌ Критическая ошибка при сохранении файла: {e}", parse_mode="HTML")
-async def main():
-await bot.delete_webhook(drop_pending_updates=True)
-await start_web_server()
-await dp.start_polling(bot)
+async def on_startup(bot: Bot):
+    await bot.delete_webhook(drop_pending_updates=True)
+
+def main():
+    app = web.Application()
+    app.router.add_get('/', lambda r: web.Response(text="Бот Fenix активен!"))
+    
+    SimpleRequestHandler(dispatcher=dp, bot=bot).register(app, path="/webhook")
+setup_application(app, dp, bot=bot)
+dp.startup.register(on_startup)
+port = int(os.getenv("PORT", 8080))
+web.run_app(app, host='0.0.0.0', port=port)
 if name == "main":
-asyncio.run(main())
+main()
