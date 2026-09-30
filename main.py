@@ -9,13 +9,10 @@ from aiogram.enums import ChatMemberStatus
 from aiogram.types import FSInputFile
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
-from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHANNEL_ID = os.getenv("CHANNEL_ID")
 ADMIN_ID = int(os.getenv("ADMIN_ID", "0"))
-# Твой адрес от Render (например: https://onrender.com)
-RENDER_URL = os.getenv("RENDER_URL")
 
 CHANNEL_URL = "tg://resolve?domain=FenixAhk"
 VPN_BOT_URL = "tg://resolve?domain=fenixVPNrobot&start=click"
@@ -133,7 +130,7 @@ async def send_ahk_file(callback: types.CallbackQuery):
                 "📦 <b>ВАШ АХК-ПАК ГОТОВ К РАБОТЕ!</b> 📦\n\n"
                 "Разработчик: <b>Fenix_dinero</b>\n"
                 "Специально для: <b>Amazing RP</b>\n\n"
-                "📂 Распакуйте скачанный <code>.zip</code> архив и запускайте AHK перед заходм в игру. Удачи на сервере! 🔥"
+                "📂 Распакуйте скачанный <code>.zip</code> архив и запускайте AHK перед заходом в игру. Удачи на сервере! 🔥"
             ),
             parse_mode="HTML"
         )
@@ -234,27 +231,17 @@ async def process_ahk_file_update(message: types.Message, state: FSMContext):
         logging.error(f"File download error: {e}")
         await message.answer(f"❌ <b>Критическая ошибка при сохранении файла:</b> {e}", parse_mode="HTML")
 
-async def on_startup(bot: Bot):
-    if RENDER_URL:
-        webhook_url = f"{RENDER_URL.rstrip('/')}/webhook"
-        await bot.set_webhook(url=webhook_url, drop_pending_updates=True)
-        logging.info(f"Webhook successfully set to: {webhook_url}")
-    else:
-        await bot.delete_webhook(drop_pending_updates=True)
-        logging.warning("RENDER_URL env var is missing! Webhook not set.")
+async def run_bot():
+    await bot.delete_webhook(drop_pending_updates=True)
+    await dp.start_polling(bot)
 
 def main():
+    loop = asyncio.get_event_loop()
+    loop.create_task(run_bot())
+    
     app = web.Application()
     app.router.add_get('/', lambda r: web.Response(text="Бот Fenix активен!"))
-    
-    SimpleRequestHandler(dispatcher=dp, bot=bot).register(app, path="/webhook")
-    setup_application(app, dp, bot=bot)
-    
-    dp.startup.register(on_startup)
-    
     port = int(os.getenv("PORT", 8080))
     web.run_app(app, host='0.0.0.0', port=port)
-
-if __name__ == "__main__":
-    main()
-
+if name == "main":
+main()
