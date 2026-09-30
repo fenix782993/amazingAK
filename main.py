@@ -235,14 +235,13 @@ async def start_polling_background(app):
     await bot.delete_webhook(drop_pending_updates=True)
     asyncio.create_task(dp.start_polling(bot))
     logging.info("Long polling started successfully in background task!")
-
 def main():
     app = web.Application()
     app.router.add_get('/', lambda r: web.Response(text="Бот Fenix активен!"))
-    
-# Запускаем сборщик сообщений параллельно с веб-сервером сайта
-app.on_startup.append(start_polling_background)
-port = int(os.getenv("PORT", 8080))
-web.run_app(app, host='0.0.0.0', port=port)
-if name == "main":
-main()
+    app.on_startup.append(start_polling_background)
+    port = int(os.getenv("PORT", 8080))
+    web.run_app(app, host='0.0.0.0', port=port)
+
+if __name__ == "__main__":
+    main()
+
