@@ -47,7 +47,7 @@ async def is_subscribed(user_id: int) -> bool:
         logging.error(f"Ошибка проверки подписки в @FenixAhk: {e}")
         return False
 
-# Клавиатура подписки (Крутые иконки)
+# Клавиатура подписки (HTML формат безопасен)
 def get_subscription_keyboard():
     builder = InlineKeyboardBuilder()
     builder.button(text="🔥 ПОДПИСАТЬСЯ НА FENIX AHK 🔥", url=CHANNEL_URL)
@@ -55,7 +55,7 @@ def get_subscription_keyboard():
     builder.adjust(1)
     return builder.as_markup()
 
-# Главное меню (Жирный стиль + Иконки)
+# Главное меню
 def get_main_keyboard():
     builder = InlineKeyboardBuilder()
     builder.button(text="🌐 ПОДКЛЮЧИТЬ PHOENIX VPN 🌐", url=VPN_BOT_URL)
@@ -73,12 +73,11 @@ async def cmd_start(message: types.Message):
         await send_main_menu(message.chat.id)
     else:
         await message.answer(
-            "🛑 **ДОСТУП ОГРАНИЧЕН!** 🛑\n\n"
-            "👋 Привет, боец! Чтобы забрать эксклюзивный **пак актуального AHK для Amazing RP**, "
+            "🛑 <b>ДОСТУП ОГРАНИЧЕН!</b> 🛑\n\n"
+            "👋 Привет, боец! Чтобы забрать эксклюзивный <b>пак актуального AHK для Amazing RP</b>, "
             "а также открыть доступ к нашим приватным сервисам, тебе нужно выполнить одно простое условие:\n\n"
-            "📌 **Подпишись на наш главный канал проекта!** Нажимай на кнопку ниже 👇",
-            parse_mode="Markdown",
-            reply_markup=get_subscription_keyboard()
+            "📌 <b>Подпишись на наш главный канал проекта!</b> Нажимай на кнопку ниже 👇",
+            parse_mode="HTML"
         )
 
 # Кнопка проверки
@@ -93,14 +92,14 @@ async def check_sub_callback(callback: types.CallbackQuery):
     else:
         await callback.answer("❌ Ошибка! Ты не подписался на канал @FenixAhk. Давай быстрее, мы ждем!", show_alert=True)
 
-# Красивое меню с текстом и кнопками
+# Красивое меню с текстом и кнопками (Исправлено под HTML)
 async def send_main_menu(chat_id: int):
     caption_text = (
-        "🦅 **ПРОЕКТ FENIX ПРИВЕТСТВУЕТ ТЕБЯ!** 🦅\n\n"
-        "Вы успешно верифицировали свой аккаунт. Специально от **Fenix_dinero** для всех игроков **Amazing RP** открыт доступ к лучшим инструментам:\n\n"
-        "⚡️ **@fenixVPNrobot** — забудь про лаги, высокий пинг и блокировки. Стабильное соединение для комфортного капта и работы.\n\n"
-        "💎 **@Fenix_Stars_bot** — наш элитный сервис для взаимодействия со звездами.\n\n"
-        "🛸 **Скачивай софт:** Жми на кнопку **'СКАЧАТЬ АХК'** ниже, архив прилетит автоматически прямо в этот чат!"
+        "🦅 <b>ПРОЕКТ FENIX ПРИВЕТСТВУЕТ ТЕБЯ!</b> 🦅\n\n"
+        "Вы успешно верифицировали свой аккаунт. Специально от <b>Fenix_dinero</b> для всех игроков <b>Amazing RP</b> открыт доступ к лучшим инструментам:\n\n"
+        "⚡️ <b>@fenixVPNrobot</b> — забудь про лаги, высокий пинг и блокировки. Стабильное соединение для комфортного капта и работы.\n\n"
+        "💎 <b>@Fenix_Stars_bot</b> — наш элитный сервис для взаимодействия со звездами.\n\n"
+        "🛸 <b>Скачивай софт:</b> Жми на кнопку <b>'СКАЧАТЬ АХК'</b> ниже, архив прилетит автоматически прямо в этот чат!"
     )
     
     if os.path.exists(BANNER_IMAGE_PATH):
@@ -108,14 +107,14 @@ async def send_main_menu(chat_id: int):
             chat_id=chat_id,
             photo=FSInputFile(BANNER_IMAGE_PATH),
             caption=caption_text,
-            parse_mode="Markdown",
+            parse_mode="HTML",
             reply_markup=get_main_keyboard()
         )
     else:
         await bot.send_message(
             chat_id=chat_id,
             text=caption_text,
-            parse_mode="Markdown",
+            parse_mode="HTML",
             reply_markup=get_main_keyboard()
         )
 
@@ -132,17 +131,19 @@ async def send_ahk_file(callback: types.CallbackQuery):
             chat_id=callback.message.chat.id,
             document=FSInputFile(ZIP_FILE_NAME),
             caption=(
-                "📦 **ВАШ АХК-ПАК ГОТОВ К РАБОТЕ!** 📦\n\n"
-                "Разработчик: **Fenix_dinero**\n"
-                "Специально для: **Amazing RP**\n\n"
-                "📂 Распакуйте скачанный `.zip` архив и запускайте скрипты перед заходом в игру. Удачи на сервере! 🔥"
+                "📦 <b>... И ФАЙЛ ГОТОВ К РАБОТЕ!</b> 📦\n\n"
+                "Разработчик: <b>Fenix_dinero</b>\n"
+                "Специально для: <b>Amazing RP</b>\n\n"
+                "📂 Распакуйте скачанный <code>.zip</code> архив и запускайте скрипты перед заходом в игру. Удачи на сервере! 🔥"
             ),
-            parse_mode="Markdown"
+            parse_mode="HTML"
         )
     else:
         await callback.answer("⚠️ Файл ahk.zip потерялся по дороге. Админ уже чинит!", show_alert=True)
 
 async def main():
+    # Удаляем вебхуки перед стартом, чтобы избежать конфликтов и очистить сессию
+    await bot.delete_webhook(drop_pending_updates=True)
     await start_web_server()
     await dp.start_polling(bot)
 
