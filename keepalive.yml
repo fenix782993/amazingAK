@@ -1,0 +1,14 @@
+name: Keep Bot Alive
+
+on:
+  schedule:
+    - cron: '*/5 * * * *' # Каждые 5 минут
+  workflow_dispatch: # Позволяет запускать вручную
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Render App
+        run: |
+          curl -I "${{ secrets.RENDER_APP_URL }}"
