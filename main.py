@@ -109,7 +109,7 @@ async def send_main_menu(chat_id: int):
         "Вы успешно верифицировали свой аккаунт. Специально от <b>Fenix_dinero</b> для всех игроков <b>Amazing RP</b> открыт доступ к лучшим инструментам:\n\n"
         "⚡️ <b>@fenixVPNrobot</b> — забудь про лаги, высокий пинг и блокировки. Стабильное соединение для комфортного капта и работы.\n\n"
         "💎 <b>@Fenix_Stars_bot</b> — наш элитный сервис для взаимодействия со звездами.\n\n"
-        "🛸 <b>Скачивай AHK:</b> Жми на кнопку <b>'СКАЧАТЬ АХК'</b> ниже, архив прилетит автоматически прямо в этот чат!"
+        "👑 <b>Скачивай AHK:</b> Жми на кнопку <b>'СКАЧАТЬ АХК'</b> ниже, архив прилетит автоматически прямо в этот чат!"
     )
     
     if os.path.exists(BANNER_IMAGE_PATH):
@@ -242,6 +242,7 @@ async def process_ahk_file_update(message: types.Message, state: FSMContext):
         await message.answer("✅ <b>Успешно!</b> Новый файл архива сохранен и готов к выдаче пользователям.", parse_mode="HTML")
     except Exception as e:
         logging.error(f"File download error: {e}")
+
 await message.answer(f"❌ Критическая ошибка при сохранении файла: {e}", parse_mode="HTML")
 async def main():
 await bot.delete_webhook(drop_pending_updates=True)
