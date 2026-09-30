@@ -240,9 +240,12 @@ def main():
     app.router.add_get('/', lambda r: web.Response(text="Бот Fenix активен!"))
     
     SimpleRequestHandler(dispatcher=dp, bot=bot).register(app, path="/webhook")
-setup_application(app, dp, bot=bot)
-dp.startup.register(on_startup)
-port = int(os.getenv("PORT", 8080))
-web.run_app(app, host='0.0.0.0', port=port)
-if name == "main":
-main()
+    setup_application(app, dp, bot=bot)
+    
+    dp.startup.register(on_startup)
+    
+    port = int(os.getenv("PORT", 8080))
+    web.run_app(app, host='0.0.0.0', port=port)
+
+if __name__ == "__main__":
+    main()
